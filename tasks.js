@@ -19,14 +19,19 @@ try {
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 async function handleTasks(auth) {
-    const service = google.tasks({ version: 'v1', auth });
-    let id = await getTaskListId(service, taskListName);
     let week = calculateWeek(dateFirstWeek);
-
     let tasksToAdd = checkSchedule(schedule, addedTasks, week);
-    for (let i = 0; i < tasksToAdd.length; i++) {
-        console.log(`Adding new task: ${formatTask(format, tasksToAdd[i], week)}`)
-        await addTask(tasksToAdd[i], addedTasks, service, id, format, week);
+
+    if (tasksToAdd.length > 0) {
+        console.log(`There are ${tasksToAdd.length} tasks to add!`);
+        const service = google.tasks({ version: 'v1', auth });
+        let id = await getTaskListId(service, taskListName);
+        for (let i = 0; i < tasksToAdd.length; i++) {
+            console.log(`Adding new task: ${formatTask(format, tasksToAdd[i], week)}`)
+            await addTask(tasksToAdd[i], addedTasks, service, id, format, week);
+        }
+    } else {
+        console.log("There are no tasks to add.");
     }
 }
 
@@ -73,16 +78,18 @@ function checkSchedule(schedule, addedTasks, week) {
 function hasBeenCreated(scheduleTask, addedTasks, week) {
     let today = new Date().getDay();
     let hour = new Date().getHours();
+    let s = scheduleTask; // alias
     let day = dayToNumber(scheduleTask.weekday);
 
     // if the task is scheduled for a future day or future hour, return false
-    if (day > today || (today === day && scheduleTask.time > hour)) return false;
+    if (day > today || (today === day && scheduleTask.time > hour)) return true;
 
     for (let i = 0; i < addedTasks.length; i++) {
+        let a = addedTasks[i];
         if (s.subject === a.subject && s.type === a.type && s.weekday === a.weekday && s.time === a.time && week === a.week)
-            return false;
+            return true;
     }
-    return true;
+    return false;
 }
 
 /**
@@ -138,6 +145,13 @@ function calculateWeek(dateFirstWeek) {
     return weeksPassed + 1;
 }
 
+/**
+ * 
+ * @param {string} format 
+ * @param {{subject: string, type: string, weekday: string, time: number}} task 
+ * @param {number} week 
+ * @returns {string} Formatted string
+ */
 function formatTask(format, task, week) {
     return format.replaceAll("${subject}", task.subject).replaceAll("${type}", task.type).replaceAll("${week}", week);
 }
