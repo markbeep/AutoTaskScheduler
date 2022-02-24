@@ -1,0 +1,13 @@
+{
+    "dateFirstWeek": "2022-02-21",
+    "taskListName": "ETH",
+    "format": "${subject}: ${type}: Week ${week}",
+    "schedule": [
+        {
+            "subject": "DMDB",
+            "type": "Exercise",
+            "weekday": "thursday",
+            "time": 16
+        }
+    ]
+}
