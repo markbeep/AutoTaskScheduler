@@ -1,3 +1,6 @@
+# Note
+I noticed Google Tasks actually has a recurring option already. Somehow I didn't find that and instead just jumped into creating this little program. This program served as a nice practice for how to use the Google API. This is a nice base for adding on more features, like dynamic task scheduling. But as it stands now, it is pretty useless.
+
 # AutoTaskScheduler
 
 This is a program which can automatically add tasks to your Google Tasks according to a schedule. Right now it works by pre-defining a weekly schedule with on what day at what time what should be added to your tasks. The program is intended to be run on a Cron Job every ~30mins or so as it currently only executes a single iteration of checking the schedule and time. It does not automatically keep on running as of now.
